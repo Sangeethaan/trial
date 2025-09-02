@@ -25,7 +25,6 @@ button {
     width: 30px;
     background-color: #fff;
     border-radius: 50%;
-    /* object-fit: cover; */
 }
 
 button span {
@@ -57,14 +56,6 @@ button:hover {
     border-radius: 10px;
 }
 
-.sign {
-    padding: 10px;
-    margin: 10px;
-    font-size: 14px;
-    text-align: center;
-    border-top: solid 0.25px rgba(255, 255, 255, 0.5);
-}
-
 .fa-trash {
     opacity: 0;
     position: absolute;
@@ -78,4 +69,84 @@ button:hover {
 
 .fa-trash:hover {
     color: #f87171 !important;
+}
+
+/* User info section */
+.user-info {
+    padding: 15px;
+    margin: 10px;
+    border-top: solid 0.25px rgba(255, 255, 255, 0.5);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Loading screen */
+.loading-screen {
+    background-color: #212121;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader {
+    color: #ececec;
+    font-size: 1.2rem;
+}
+
+.user-details {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.user-avatar {
+    background-color: #339cff;
+    height: 35px;
+    width: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+}
+
+.user-name {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.user-name span {
+    color: #ececec;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.user-name small {
+    color: #b4b4b4;
+    font-size: 12px;
+}
+
+.logout-btn {
+    background-color: transparent;
+    border: 1px solid rgba(248, 113, 113, 0.5);
+    color: #f87171;
+    padding: 8px;
+    border-radius: 8px;
+    margin: 0;
+    min-width: 35px;
+    height: 35px;
+}
+
+.logout-btn:hover {
+    background-color: rgba(248, 113, 113, 0.1);
+    border-color: #f87171;
+}
+
+.logout-btn i {
+    font-size: 14px;
 }

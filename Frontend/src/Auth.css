@@ -1,0 +1,140 @@
+.auth-container {
+    background-color: #212121;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.auth-card {
+    background-color: #171717;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 54px 55px,
+                rgba(0, 0, 0, 0.12) 0px -12px 30px,
+                rgba(0, 0, 0, 0.12) 0px 4px 6px,
+                rgba(0, 0, 0, 0.17) 0px 12px 13px,
+                rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.auth-header h2 {
+    color: #ececec;
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+    font-weight: 600;
+}
+
+.auth-header p {
+    color: #b4b4b4;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    width: 100%;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #ececec;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.form-group input::placeholder {
+    color: #b4b4b4;
+}
+
+.form-group input:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 0 2px rgba(51, 156, 255, 0.3);
+}
+
+.form-group input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-button {
+    background-color: #339cff;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.auth-button:hover:not(:disabled) {
+    background-color: #2d8ae6;
+    transform: translateY(-1px);
+}
+
+.auth-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.error-message {
+    background-color: rgba(248, 113, 113, 0.1);
+    color: #f87171;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.auth-toggle {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.auth-toggle p {
+    color: #b4b4b4;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.toggle-button {
+    background: none;
+    border: none;
+    color: #339cff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-decoration: underline;
+    padding: 0;
+    margin: 0;
+}
+
+.toggle-button:hover:not(:disabled) {
+    color: #2d8ae6;
+}
+
+.toggle-button:disabled {
+    color: #555;
+    cursor: not-allowed;
+}

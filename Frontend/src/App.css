@@ -12,3 +12,17 @@ body {
     background-color: #212121;
     display: flex;
 }
+
+/* Loading screen */
+.loading-screen {
+    background-color: #212121;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader {
+    color: #ececec;
+    font-size: 1.2rem;
+}

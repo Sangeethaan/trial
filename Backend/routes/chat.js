@@ -1,13 +1,18 @@
 import express from 'express';
 import Thread from "../models/Thread.js";
 import getGeminiApiResponse from "../utils/geminiai.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+// Apply auth middleware to all routes
+router.use(authMiddleware);
 
 router.post("/test", async(req , res) => {
     try{
         const thread = new Thread({
             threadId : "xyz",
+            userId: req.user._id,
             title : "sample thread"
         });
 
@@ -19,10 +24,10 @@ router.post("/test", async(req , res) => {
     }
 });
 
-
 router.get("/thread", async(req,res) => {
     try{
-        let threads = await Thread.find({}).sort({updatedAt: -1});
+        // Only get threads for the authenticated user
+        let threads = await Thread.find({ userId: req.user._id }).sort({updatedAt: -1});
         console.log(threads);
         res.send(threads);
 
@@ -35,9 +40,10 @@ router.get("/thread", async(req,res) => {
 router.get("/thread/:threadId", async (req,res) => {
     let {threadId} = req.params;
     try{
-        let thread = await Thread.findOne({threadId});
+        // Only get thread if it belongs to the authenticated user
+        let thread = await Thread.findOne({threadId, userId: req.user._id});
         if(!thread){
-            res.status(404).send("specified threadId does'nt exists");
+            res.status(404).send("specified threadId doesn't exist or you don't have access");
         }
         res.send(thread.messages);
         
@@ -50,8 +56,12 @@ router.get("/thread/:threadId", async (req,res) => {
 router.delete("/thread/:threadId", async(req,res) => {
     let {threadId} = req.params;
     try{
-        let thread = await Thread.findOneAndDelete({threadId});
-        res.send("deleted the thread",thread);
+        // Only delete thread if it belongs to the authenticated user
+        let thread = await Thread.findOneAndDelete({threadId, userId: req.user._id});
+        if(!thread){
+            return res.status(404).send("Thread not found or you don't have access");
+        }
+        res.send("deleted the thread");
     }catch(err){
         console.log(err);
         res.status(500).send("failed to delete data from DB");
@@ -66,11 +76,12 @@ router.post("/chat", async (req, res) => {
   }
 
   try {
-    let thread = await Thread.findOne({ threadId });
+    let thread = await Thread.findOne({ threadId, userId: req.user._id });
 
     if (!thread) {
       thread = new Thread({
         threadId,
+        userId: req.user._id,
         title: message,
         messages: [{ role: "user", content: message }],
       });
@@ -78,7 +89,7 @@ router.post("/chat", async (req, res) => {
       thread.messages.push({ role: "user", content: message });
     }
 
-    const assistantReply = await getGeminiApiResponse(message); // just pass the prompt
+    const assistantReply = await getGeminiApiResponse(message);
 
     thread.messages.push({ role: "assistant", content: assistantReply });
     thread.updatedAt = new Date();
@@ -86,6 +97,7 @@ router.post("/chat", async (req, res) => {
 
     res.json({ reply: assistantReply });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: "Something went wrong" });
   }
 });

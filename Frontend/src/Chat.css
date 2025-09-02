@@ -12,7 +12,10 @@
 
 .gptDiv {
     text-align: left;
-    font-size: 0.9rem;
+    font-size: 14px; /* Setting a specific font size */
+    line-height: 1.5; /* Adjusts the line spacing */
+    margin-bottom: 1rem; /* Adds space between the chat messages */
+    word-spacing: 2px; /* Adjusts the space between words */
 }
 
 .userMessage {
@@ -30,4 +33,20 @@
 
 pre{
     white-space: pre-wrap;
+}
+
+/* Custom scrollbar for the chat area */
+.chats::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+/* Track behind the scrollbar */
+.chats::-webkit-scrollbar-track {
+    background-color: #212121; /* Matches the chat window background */
+}
+
+/* The scrollbar thumb (the movable part) */
+.chats::-webkit-scrollbar-thumb {
+    background-color: #555; /* A dark gray color for visibility */
+    border-radius: 4px; /* Rounded corners for a modern look */
 }

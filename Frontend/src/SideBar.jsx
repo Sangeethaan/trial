@@ -2,27 +2,38 @@ import './SideBar.css';
 import promptPilotLogo from "./assets/promptPilot.png";
 import { useContext, useEffect } from 'react';
 import { MyContext } from './MyContext';
+import { useAuth } from './AuthContext';
 import {v1 as uuidv1} from "uuid";
 
 
 function SideBar() {
     let {allThreads, setAllThreads , currThreadId , setNewChat , setPrompt ,setReply, setCurrThreadId , setPrevChats} = useContext(MyContext);
+    const { user, logout, token } = useAuth();
 
     let getAllThreads = async () => {
         try{
-            const response = await fetch("http://localhost:8080/api/thread");
-            const res = await response.json();
-            const filteredData = res.map(thread => ({threadId: thread.threadId, title: thread.title}));
-            console.log(filteredData);
-            setAllThreads(filteredData);
+            const response = await fetch("http://localhost:8080/api/thread", {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                const res = await response.json();
+                const filteredData = res.map(thread => ({threadId: thread.threadId, title: thread.title}));
+                console.log(filteredData);
+                setAllThreads(filteredData);
+            }
         }catch(err) {
             console.log(err);
         }
     };
 
     useEffect(() => {
-        getAllThreads();
-    }, [currThreadId])
+        if (token) {
+            getAllThreads();
+        }
+    }, [currThreadId, token])
 
     const createNewChat = () => {
         setNewChat(true);
@@ -36,12 +47,19 @@ function SideBar() {
         setCurrThreadId(newThreadId);
 
         try{
-            const response = await fetch(`http://localhost:8080/api/thread/${newThreadId}`);
-            const res = await response.json();
-            console.log(res);
-            setPrevChats(res);
-            setNewChat(false);
-            setReply(null);
+            const response = await fetch(`http://localhost:8080/api/thread/${newThreadId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                const res = await response.json();
+                console.log(res);
+                setPrevChats(res);
+                setNewChat(false);
+                setReply(null);
+            }
         }catch(err) {
             console.log(err);
         }
@@ -49,20 +67,33 @@ function SideBar() {
 
     const deleteThread = async (threadId) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/thread/${threadId}`, {method: "DELETE"});
-            const res = await response.text();
-            console.log(res);
+            const response = await fetch(`http://localhost:8080/api/thread/${threadId}`, {
+                method: "DELETE",
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (response.ok) {
+                const res = await response.text();
+                console.log(res);
 
-            setAllThreads(prev => prev.filter(thread => thread.threadId !== threadId));
+                setAllThreads(prev => prev.filter(thread => thread.threadId !== threadId));
 
-            if(threadId === currThreadId){
-                createNewChat();
+                if(threadId === currThreadId){
+                    createNewChat();
+                }
             }
         }catch(err) {
             console.log(err);
         }
     }
 
+    const handleLogout = () => {
+        logout();
+        createNewChat();
+        setAllThreads([]);
+    };
 
     return (
     <section className='sidebar'>
@@ -91,8 +122,19 @@ function SideBar() {
             }
         </ul>
         
-        <div className="sign">
-            <p>By PromptPilot &hearts;</p>
+        <div className="user-info">
+            <div className="user-details">
+                <div className="user-avatar">
+                    <i className="fa-solid fa-user"></i>
+                </div>
+                <div className="user-name">
+                    <span>{user?.username}</span>
+                    <small>{user?.email}</small>
+                </div>
+            </div>
+            <button className="logout-btn" onClick={handleLogout}>
+                <i className="fa-solid fa-sign-out-alt"></i>
+            </button>
         </div>
 
     </section>
