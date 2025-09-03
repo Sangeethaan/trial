@@ -102,4 +102,21 @@ router.post("/chat", async (req, res) => {
   }
 });
 
+// Guest chat route (no authentication required)
+router.post("/guest-chat", async (req, res) => {
+  const { message } = req.body;
+
+  if (!message) {
+    return res.status(400).send("Message is required");
+  }
+
+  try {
+    const assistantReply = await getGeminiApiResponse(message);
+    res.json({ reply: assistantReply });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
+
 export default router;

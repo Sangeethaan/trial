@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useAuth } from './AuthContext';
+import { MyContext } from './MyContext';
 import './Auth.css';
 
 function Auth() {
@@ -13,6 +14,7 @@ function Auth() {
     const [loading, setLoading] = useState(false);
     
     const { login, register } = useAuth();
+    const { setShowAuth, setGuestMode } = useContext(MyContext);
 
     const handleChange = (e) => {
         setFormData({
@@ -35,7 +37,10 @@ function Auth() {
                 result = await register(formData.username, formData.email, formData.password);
             }
 
-            if (!result.success) {
+            if (result.success) {
+                setShowAuth(false);
+                setGuestMode(false);
+            } else {
                 setError(result.error);
             }
         } catch (error) {
@@ -55,9 +60,19 @@ function Auth() {
         setError('');
     };
 
+    const handleBackToGuest = () => {
+        setShowAuth(false);
+        setGuestMode(true);
+    };
+
     return (
         <div className="auth-container">
             <div className="auth-card">
+                <button className="back-to-guest-btn" onClick={handleBackToGuest}>
+                    <i className="fa-solid fa-arrow-left"></i>
+                    Continue as Guest
+                </button>
+
                 <div className="auth-header">
                     <h2>{isLogin ? 'Sign In' : 'Sign Up'}</h2>
                     <p>Welcome to PromptPilot</p>
