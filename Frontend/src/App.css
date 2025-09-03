@@ -1,28 +1,50 @@
+/* Theme variables */
+:root[data-theme="dark"] {
+    --bg-primary: #212121;
+    --bg-secondary: #171717;
+    --text-primary: #ececec;
+    --text-secondary: #b4b4b4;
+    --accent-color: #339cff;
+}
+
+:root[data-theme="light"] {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --accent-color: #0d6efd;
+}
+
 * {
-    color: #ececec;
+    color: var(--text-primary);
     font-family: Roboto, 'Open Sans', 'Helvetica Neue', sans-serif;
+    transition: color 0.3s ease;
 }
 
 body {
     margin: 0;
     padding: 0;
+    background-color: var(--bg-primary);
+    transition: background-color 0.3s ease;
 }
 
 .app {
-    background-color: #212121;
+    background-color: var(--bg-primary);
     display: flex;
+    transition: background-color 0.3s ease;
 }
 
 /* Loading screen */
 .loading-screen {
-    background-color: #212121;
+    background-color: var(--bg-primary);
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.3s ease;
 }
 
 .loader {
-    color: #ececec;
+    color: var(--text-primary);
     font-size: 1.2rem;
 }

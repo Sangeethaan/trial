@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
                 const data = await response.json();
                 setUser(data.user);
             } else {
+                // Token is invalid, clear it
                 localStorage.removeItem('token');
                 setToken(null);
                 setUser(null);
@@ -63,10 +64,11 @@ export const AuthProvider = ({ children }) => {
                 setUser(data.user);
                 return { success: true };
             } else {
-                return { success: false, error: data.error };
+                return { success: false, error: data.error || 'Login failed' };
             }
         } catch (error) {
-            return { success: false, error: 'Network error' };
+            console.error('Login error:', error);
+            return { success: false, error: 'Network error. Please check your connection.' };
         }
     };
 
@@ -88,10 +90,11 @@ export const AuthProvider = ({ children }) => {
                 setUser(data.user);
                 return { success: true };
             } else {
-                return { success: false, error: data.error };
+                return { success: false, error: data.error || 'Registration failed' };
             }
         } catch (error) {
-            return { success: false, error: 'Network error' };
+            console.error('Registration error:', error);
+            return { success: false, error: 'Network error. Please check your connection.' };
         }
     };
 

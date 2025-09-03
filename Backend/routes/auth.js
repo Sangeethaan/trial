@@ -18,21 +18,32 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ error: 'Password must be at least 6 characters long' });
         }
 
+        if (username.length < 3 || username.length > 30) {
+            return res.status(400).json({ error: 'Username must be between 3 and 30 characters' });
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: 'Please provide a valid email address' });
+        }
+
         // Check if user already exists
         const existingUser = await User.findOne({ 
-            $or: [{ email }, { username }] 
+            $or: [{ email: email.toLowerCase() }, { username }] 
         });
 
         if (existingUser) {
-            return res.status(400).json({ 
-                error: existingUser.email === email ? 'Email already registered' : 'Username already taken' 
-            });
+            const errorMessage = existingUser.email === email.toLowerCase() 
+                ? 'Email already registered' 
+                : 'Username already taken';
+            return res.status(400).json({ error: errorMessage });
         }
 
         // Create new user
         const user = new User({
             username,
-            email,
+            email: email.toLowerCase(),
             password
         });
 
@@ -57,6 +68,20 @@ router.post('/register', async (req, res) => {
 
     } catch (error) {
         console.error('Registration error:', error);
+        
+        // Handle MongoDB duplicate key errors
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyValue)[0];
+            const message = field === 'email' ? 'Email already registered' : 'Username already taken';
+            return res.status(400).json({ error: message });
+        }
+        
+        // Handle MongoDB validation errors
+        if (error.name === 'ValidationError') {
+            const messages = Object.values(error.errors).map(err => err.message);
+            return res.status(400).json({ error: messages.join(', ') });
+        }
+
         res.status(500).json({ error: 'Server error during registration' });
     }
 });
@@ -71,8 +96,8 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ error: 'Please provide email and password' });
         }
 
-        // Check if user exists
-        const user = await User.findOne({ email });
+        // Check if user exists (case insensitive email)
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (!user) {
             return res.status(400).json({ error: 'Invalid credentials' });
         }
@@ -130,6 +155,7 @@ router.get('/me', async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Token validation error:', error);
         res.status(401).json({ error: "Token is not valid" });
     }
 });

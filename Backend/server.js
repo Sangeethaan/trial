@@ -7,11 +7,29 @@ import chatRoutes from "./routes/chat.js";
 import authRoutes from "./routes/auth.js";
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 
-// Middleware
-app.use(cors());
-app.use(express.json()); // To parse JSON bodies
+// Enhanced CORS configuration
+app.use(cors({
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'], // Add your frontend URLs
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json({ limit: '10mb' })); // Increased limit and parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
+// Add request logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+});
+
+// Health check route
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -20,16 +38,37 @@ app.use("/api", chatRoutes);
 // Initialize the Google Gemini client once
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
-  connectDB();
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+});
+
+// 404 handler
+app.use((req, res) => {
+    res.status(404).json({ error: 'Route not found' });
 });
 
 const connectDB = async() => {
-  try{
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("Connected to DB successfully");
-  }catch(err){
-    console.log("failed to connect to DB",err);
-  }
-}
+    try{
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("Connected to MongoDB successfully");
+    }catch(err){
+        console.error("Failed to connect to MongoDB:", err);
+        process.exit(1);
+    }
+};
+
+// Connect to database first, then start server
+connectDB().then(() => {
+    app.listen(port, () => {
+        console.log(`Server is running on port: ${port}`);
+        console.log(`Health check available at: http://localhost:${port}/health`);
+    });
+}).catch(err => {
+    console.error('Failed to start server:', err);
+    process.exit(1);
+});

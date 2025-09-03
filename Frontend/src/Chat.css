@@ -1,52 +1,200 @@
+/* Theme support for chat area */
 .chats {
     max-width: 700px;
     overflow-y: auto;
     padding: 8rem;
+    color: var(--text-primary);
+}
+
+.chats h1 {
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
 .userDiv {
     display: flex;
     justify-content: flex-end;
     font-size: 0.9rem;
+    margin-bottom: 1rem;
 }
 
 .gptDiv {
     text-align: left;
-    font-size: 14px; /* Setting a specific font size */
-    line-height: 1.5; /* Adjusts the line spacing */
-    margin-bottom: 1rem; /* Adds space between the chat messages */
-    word-spacing: 2px; /* Adjusts the space between words */
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    word-spacing: 1px;
+    color: var(--text-primary);
 }
 
 .userMessage {
-    background-color: #323232;
-    padding: 10px 20px;
-    border-radius: 14px;
+    background-color: var(--accent-color);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 18px;
     margin-left: 15rem;
     max-width: 500px;
     width: fit-content;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word;
 }
 
-.hljs{
-    border-radius: 20px;
+/* Markdown content styling */
+.gptDiv h1, .gptDiv h2, .gptDiv h3, .gptDiv h4, .gptDiv h5, .gptDiv h6 {
+    color: var(--text-primary);
+    margin: 1.5em 0 0.5em 0;
 }
 
-pre{
-    white-space: pre-wrap;
+.gptDiv p {
+    color: var(--text-primary);
+    margin: 0.8em 0;
+    line-height: 1.6;
+}
+
+.gptDiv ul, .gptDiv ol {
+    color: var(--text-primary);
+    margin: 1em 0;
+    padding-left: 2em;
+}
+
+.gptDiv li {
+    color: var(--text-primary);
+    margin: 0.4em 0;
+}
+
+.gptDiv strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.gptDiv em {
+    color: var(--text-primary);
+    font-style: italic;
+}
+
+.gptDiv blockquote {
+    border-left: 4px solid var(--accent-color);
+    margin: 1em 0;
+    padding: 0.5em 0 0.5em 1em;
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border-radius: 0 8px 8px 0;
+}
+
+/* Code styling */
+.gptDiv code {
+    background-color: var(--bg-secondary);
+    color: var(--accent-color);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.gptDiv pre {
+    background-color: var(--bg-secondary);
+    border-radius: 12px;
+    padding: 1.5em;
+    margin: 1em 0;
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+}
+
+.gptDiv pre code {
+    background: none;
+    color: var(--text-primary);
+    padding: 0;
+    border-radius: 0;
+}
+
+/* Links */
+.gptDiv a {
+    color: var(--accent-color);
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.gptDiv a:hover {
+    color: var(--text-primary);
+}
+
+/* Tables */
+.gptDiv table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1em 0;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.gptDiv th, .gptDiv td {
+    border: 1px solid var(--border-color);
+    padding: 8px 12px;
+    text-align: left;
+    color: var(--text-primary);
+}
+
+.gptDiv th {
+    background-color: var(--bg-secondary);
+    font-weight: 600;
+}
+
+.gptDiv tr:nth-child(even) {
+    background-color: var(--bg-secondary);
 }
 
 /* Custom scrollbar for the chat area */
 .chats::-webkit-scrollbar {
-    width: 8px; /* Width of the scrollbar */
+    width: 8px;
 }
 
-/* Track behind the scrollbar */
 .chats::-webkit-scrollbar-track {
-    background-color: #212121; /* Matches the chat window background */
+    background-color: var(--bg-primary);
 }
 
-/* The scrollbar thumb (the movable part) */
 .chats::-webkit-scrollbar-thumb {
-    background-color: #555; /* A dark gray color for visibility */
-    border-radius: 4px; /* Rounded corners for a modern look */
+    background-color: var(--text-secondary);
+    border-radius: 4px;
+    opacity: 0.6;
+}
+
+.chats::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-primary);
+    opacity: 0.8;
+}
+
+/* Light theme specific adjustments */
+:root[data-theme="light"] .hljs {
+    background: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+:root[data-theme="dark"] .hljs {
+    background: #1a1a1a !important;
+    color: #ececec !important;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .chats {
+        padding: 4rem 2rem;
+    }
+    
+    .userMessage {
+        margin-left: 2rem;
+        max-width: calc(100% - 4rem);
+    }
+}
+
+@media (max-width: 480px) {
+    .chats {
+        padding: 2rem 1rem;
+    }
+    
+    .userMessage {
+        margin-left: 1rem;
+        max-width: calc(100% - 2rem);
+    }
 }
