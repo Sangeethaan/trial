@@ -5,7 +5,7 @@ import Auth from './Auth';
 import About from './About';
 import { MyContext } from './MyContext';
 import { AuthProvider, useAuth } from './AuthContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {v1 as uuidv1} from 'uuid';
 
 function AppContent() {
@@ -18,7 +18,17 @@ function AppContent() {
   let [allThreads , setAllThreads] = useState([]);
   let [showAuth, setShowAuth] = useState(false);
   let [showAbout, setShowAbout] = useState(false);
-  let [guestMode, setGuestMode] = useState(!user && !showAuth);
+  let [guestMode, setGuestMode] = useState(true);
+
+  // Sync guest mode with authentication state
+  useEffect(() => {
+    if (user) {
+      setGuestMode(false);
+      setShowAuth(false);
+    } else if (!showAuth) {
+      setGuestMode(true);
+    }
+  }, [user, showAuth]);
 
   const providerValues = {
     prompt , setPrompt,

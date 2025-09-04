@@ -1,3 +1,4 @@
+// Backend/server.js
 import 'dotenv/config'; // Loads .env file contents into process.env
 import express from 'express';
 import cors from 'cors';
@@ -5,6 +6,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import mongoose from 'mongoose';
 import chatRoutes from "./routes/chat.js";
 import authRoutes from "./routes/auth.js";
+import getGeminiApiResponse from "./utils/geminiai.js"; // Import the utility function
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -29,6 +31,23 @@ app.use((req, res, next) => {
 // Health check route
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Define the guest chat route here, before the main chatRoutes are used
+app.post("/api/guest-chat", async (req, res) => {
+  const { message } = req.body;
+
+  if (!message) {
+    return res.status(400).send("Message is required");
+  }
+
+  try {
+    const assistantReply = await getGeminiApiResponse(message);
+    res.json({ reply: assistantReply });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
 });
 
 // Routes

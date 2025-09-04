@@ -24,19 +24,25 @@ function ChatWindow() {
         setLoader(true);
         setNewChat(false);
 
-        // For guest mode, use guest API endpoint
-        if (!user) {
-            const options = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: prompt
-                }),
-            };
+        // Add user message to chat immediately for better UX
+        const userMessage = { role: "user", content: prompt };
+        setPrevChats(prevChats => [...prevChats, userMessage]);
+        const currentPrompt = prompt;
+        setPrompt(""); // Clear input immediately
 
-            try {
+        try {
+            if (!user || guestMode) {
+                // Guest mode API call
+                const options = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: currentPrompt
+                    }),
+                };
+
                 const response = await fetch("http://localhost:8080/api/guest-chat", options);
                 if (response.ok) {
                     const data = await response.json();
@@ -46,58 +52,48 @@ function ChatWindow() {
                     console.error('Guest chat error:', errorData);
                     setReply("Sorry, I'm having trouble processing your request right now. Please try again later.");
                 }
-            } catch (err) {
-                console.log(err);
-                setReply("Sorry, I'm having trouble connecting. Please check your internet connection and try again.");
-            }
-            setLoader(false);
-            return;
-        }
-
-        // For authenticated users
-        const options = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({
-                message: prompt,
-                threadId: currThreadId
-            }),
-        };
-
-        try {
-            const response = await fetch("http://localhost:8080/api/chat", options);
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data.reply);
-                setReply(data.reply);
             } else {
-                const errorData = await response.json();
-                console.error('Chat error:', errorData);
+                // Authenticated user API call
+                const options = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        message: currentPrompt,
+                        threadId: currThreadId
+                    }),
+                };
+
+                const response = await fetch("http://localhost:8080/api/chat", options);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log(data.reply);
+                    setReply(data.reply);
+                } else {
+                    const errorData = await response.json();
+                    console.error('Chat error:', errorData);
+                    setReply("Sorry, I'm having trouble processing your request right now. Please try again later.");
+                }
             }
         } catch (err) {
-            console.log(err);
+            console.error('Network error:', err);
+            setReply("Sorry, I'm having trouble connecting. Please check your internet connection and try again.");
         }
+        
         setLoader(false);
     };
 
-    // Append new chat to prevChats
+    // Append assistant reply to prevChats
     useEffect(() => {
-        if (prompt && reply) {
-            setPrevChats(prevChats => (
-                [...prevChats, {
-                    role: "user",
-                    content: prompt
-                }, {
-                    role: "assistant",
-                    content: reply
-                }]
-            ));
+        if (reply) {
+            setPrevChats(prevChats => [
+                ...prevChats, 
+                { role: "assistant", content: reply }
+            ]);
         }
-        setPrompt("");
-    }, [reply]);
+    }, [reply, setPrevChats]);
 
     const handleThemeToggle = () => {
         const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -108,6 +104,10 @@ function ChatWindow() {
         logout();
         setShowProfileDropdown(false);
         setGuestMode(true);
+        // Clear chat data on logout
+        setPrevChats([]);
+        setReply(null);
+        setNewChat(true);
     };
 
     const handleSignIn = () => {
@@ -134,7 +134,7 @@ function ChatWindow() {
     }, [showProfileDropdown]);
 
     const handleKeyDown = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
+        if (e.key === 'Enter' && !e.shiftKey && !loader) {
             e.preventDefault();
             getReply();
         }
@@ -149,7 +149,7 @@ function ChatWindow() {
                     <i className="fa-solid fa-chevron-down fa-xs"></i>
                 </span>
                 
-                {user ? (
+                {user && !guestMode ? (
                     <div className="profile-dropdown-container">
                         <div 
                             className="userIconDiv" 
@@ -229,7 +229,7 @@ function ChatWindow() {
 
                 <p className='info'>
                     PromptPilot can make mistakes. Check important info. 
-                    {!user && (
+                    {(!user || guestMode) && (
                         <span> <strong><span onClick={handleSignIn} style={{cursor: 'pointer', color: 'var(--accent-color)'}}>Sign in</span></strong> to save your conversations.</span>
                     )}
                 </p>

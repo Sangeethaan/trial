@@ -68,7 +68,19 @@ function Auth() {
     return (
         <div className="auth-container">
             <div className="auth-card">
-                <button className="back-to-guest-btn" onClick={handleBackToGuest}>
+                <button className="back-to-guest-btn" onClick={handleBackToGuest} style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    marginBottom: '1rem',
+                    padding: '8px 0',
+                    fontSize: '14px',
+                    transition: 'color 0.3s ease'
+                }}>
                     <i className="fa-solid fa-arrow-left"></i>
                     Continue as Guest
                 </button>
