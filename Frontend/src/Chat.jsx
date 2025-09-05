@@ -23,6 +23,14 @@ function Chat() {
 
         if (!prevChats?.length) return;
 
+        // Check if the last message in prevChats is an assistant message with the same content as reply
+        const lastMessage = prevChats[prevChats.length - 1];
+        if (lastMessage?.role === "assistant" && lastMessage?.content === reply) {
+            // This reply has already been added to prevChats, don't animate
+            setLatestReply(null);
+            return;
+        }
+
         const content = reply.split(" "); // individual words
 
         let idx = 0;
@@ -44,37 +52,36 @@ function Chat() {
             )}
             
             {/* Render previous messages */}
-            {prevChats?.slice(0, -1).map((chat, idx) => (
-                <div className={chat.role === "user" ? "userDiv" : "gptDiv"} key={idx}>
-                    {chat.role === "user" ? (
-                        <div className="userMessage">{chat.content}</div>
-                    ) : (
-                        <div>
-                            <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-                                {chat.content}
-                            </ReactMarkdown>
-                        </div>
-                    )}
-                </div>
-            ))}
+            {prevChats?.map((chat, idx) => {
+                // Skip the last assistant message if we're currently typing it
+                if (chat.role === "assistant" && 
+                    idx === prevChats.length - 1 && 
+                    chat.content === reply && 
+                    latestReply !== null) {
+                    return null;
+                }
+                
+                return (
+                    <div className={chat.role === "user" ? "userDiv" : "gptDiv"} key={idx}>
+                        {chat.role === "user" ? (
+                            <div className="userMessage">{chat.content}</div>
+                        ) : (
+                            <div>
+                                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
+                                    {chat.content}
+                                </ReactMarkdown>
+                            </div>
+                        )}
+                    </div>
+                );
+            })}
 
             {/* Render typing animation for latest reply */}
-            {prevChats.length > 0 && latestReply !== null && (
+            {latestReply !== null && latestReply !== "" && (
                 <div className="gptDiv" key="typing">
                     <div>
                         <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
                             {latestReply}
-                        </ReactMarkdown>
-                    </div>
-                </div>
-            )}
-
-            {/* Render final reply without typing animation */}
-            {prevChats.length > 0 && latestReply === null && prevChats[prevChats.length - 1]?.role === "assistant" && (
-                <div className="gptDiv" key="final">
-                    <div>
-                        <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-                            {prevChats[prevChats.length - 1].content}
                         </ReactMarkdown>
                     </div>
                 </div>

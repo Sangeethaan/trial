@@ -14,7 +14,7 @@ function Auth() {
     const [loading, setLoading] = useState(false);
     
     const { login, register } = useAuth();
-    const { setShowAuth, setGuestMode } = useContext(MyContext);
+    const { setShowAuth, setGuestMode, setPrevChats, setReply, setNewChat } = useContext(MyContext);
 
     const handleChange = (e) => {
         setFormData({
@@ -38,6 +38,11 @@ function Auth() {
             }
 
             if (result.success) {
+                // Clear any guest chat data before switching to authenticated mode
+                setPrevChats([]);
+                setReply(null);
+                setNewChat(true);
+                
                 setShowAuth(false);
                 setGuestMode(false);
             } else {

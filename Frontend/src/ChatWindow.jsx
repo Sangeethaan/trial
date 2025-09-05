@@ -18,6 +18,17 @@ function ChatWindow() {
         localStorage.setItem('theme', theme);
     }, [theme]);
 
+    // Clear chat data when switching between guest and authenticated modes
+    useEffect(() => {
+        if (user && guestMode) {
+            // User just signed in from guest mode - clear guest chat data
+            setPrevChats([]);
+            setReply(null);
+            setNewChat(true);
+            setGuestMode(false);
+        }
+    }, [user, guestMode, setPrevChats, setReply, setNewChat, setGuestMode]);
+
     const getReply = async () => {
         if (!prompt.trim()) return;
 
@@ -29,6 +40,9 @@ function ChatWindow() {
         setPrevChats(prevChats => [...prevChats, userMessage]);
         const currentPrompt = prompt;
         setPrompt(""); // Clear input immediately
+        
+        // Clear any previous reply after adding user message
+        setReply(null);
 
         try {
             if (!user || guestMode) {
@@ -112,7 +126,7 @@ function ChatWindow() {
 
     const handleSignIn = () => {
         setShowAuth(true);
-        setGuestMode(false);
+        // Don't set guestMode to false here - let it be handled after successful auth
     };
 
     const handleAbout = () => {
