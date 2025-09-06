@@ -19,6 +19,8 @@ app.use(
       'http://localhost:3000',
       'http://localhost:5173',
       'http://127.0.0.1:5173',
+      'https://your-frontend-app-name.onrender.com', // Replace with your actual frontend URL
+      process.env.FRONTEND_URL // Add this for flexibility
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -37,7 +39,19 @@ app.use((req, res, next) => {
 
 // Health check route
 app.get('/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development'
+  });
+});
+
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'PromptPilot Backend API',
+    status: 'running',
+    version: '1.0.0'
+  });
 });
 
 // Guest chat route
@@ -73,6 +87,8 @@ app.use((err, req, res, next) => {
 app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
+
+
 
 // Database connection
 const connectDB = async () => {

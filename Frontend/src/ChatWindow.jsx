@@ -1,4 +1,5 @@
 import './ChatWindow.css';
+import config from './config.js';
 import Chat from './Chat';
 import { MyContext } from './MyContext';
 import { useAuth } from './AuthContext';
@@ -57,7 +58,7 @@ function ChatWindow() {
                     }),
                 };
 
-                const response = await fetch("http://localhost:8080/api/guest-chat", options);
+                const response = await fetch(`${config.API_BASE_URL}/api/guest-chat`, options);
                 if (response.ok) {
                     const data = await response.json();
                     setReply(data.reply);
@@ -80,7 +81,7 @@ function ChatWindow() {
                     }),
                 };
 
-                const response = await fetch("http://localhost:8080/api/chat", options);
+                const response = await fetch(`${config.API_BASE_URL}/api/chat`, options);
                 if (response.ok) {
                     const data = await response.json();
                     console.log(data.reply);

@@ -1,4 +1,5 @@
 import './SideBar.css';
+import config from './config.js';
 import promptPilotLogo from "./assets/promptPilot.png";
 import { useContext, useEffect } from 'react';
 import { MyContext } from './MyContext';
@@ -12,7 +13,7 @@ function SideBar() {
 
     let getAllThreads = async () => {
         try{
-            const response = await fetch("http://localhost:8080/api/thread", {
+            const response = await fetch(`${config.API_BASE_URL}/api/thread`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -47,7 +48,7 @@ function SideBar() {
         setCurrThreadId(newThreadId);
 
         try{
-            const response = await fetch(`http://localhost:8080/api/thread/${newThreadId}`, {
+            const response = await fetch(`${config.API_BASE_URL}/api/thread/${newThreadId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -67,7 +68,7 @@ function SideBar() {
 
     const deleteThread = async (threadId) => {
         try {
-            const response = await fetch(`http://localhost:8080/api/thread/${threadId}`, {
+            const response = await fetch(`${config.API_BASE_URL}/api/thread/${threadId}`, {
                 method: "DELETE",
                 headers: {
                     'Authorization': `Bearer ${token}`
