@@ -33,12 +33,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.navbar span:hover {
-    color: var(--accent-color);
 }
 
 /* Guest actions */

@@ -13,7 +13,7 @@
 /* New chat button */
 .sidebar > button {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     gap: 12px;
     margin: 16px 12px;

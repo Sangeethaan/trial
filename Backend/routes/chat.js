@@ -100,10 +100,5 @@ router.delete("/thread/:threadId", authMiddleware, async(req,res) => {
     }
 })
 
-// Guest chat route (no authentication required)
-// Remove this route from here
-// router.post("/guest-chat", async (req, res) => {
-//   ...
-// });
 
 export default router;

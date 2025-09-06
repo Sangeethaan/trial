@@ -8,6 +8,7 @@ import 'highlight.js/styles/github-dark.css';
 function Chat() {
     let { newChat, prevChats, reply } = useContext(MyContext);
     const [latestReply, setLatestReply] = useState(null);
+    const [lastProcessedReply, setLastProcessedReply] = useState(null);
     const chatEndRef = useRef(null);
 
     // Auto-scroll to bottom when new messages arrive
@@ -16,11 +17,14 @@ function Chat() {
     }, [prevChats, latestReply]);
 
     useEffect(() => {
+        // If reply is null, clear the typing animation
         if (reply === null) {
             setLatestReply(null);
+            setLastProcessedReply(null);
             return;
         }
 
+        // If we don't have any previous chats, don't process the reply
         if (!prevChats?.length) return;
 
         // Check if the last message in prevChats is an assistant message with the same content as reply
@@ -28,20 +32,30 @@ function Chat() {
         if (lastMessage?.role === "assistant" && lastMessage?.content === reply) {
             // This reply has already been added to prevChats, don't animate
             setLatestReply(null);
+            setLastProcessedReply(reply);
             return;
         }
 
+        // Check if we've already processed this exact reply to prevent re-animation
+        if (reply === lastProcessedReply) {
+            return;
+        }
+
+        // Start the typing animation for new replies
+        setLastProcessedReply(reply);
         const content = reply.split(" "); // individual words
 
         let idx = 0;
         const interval = setInterval(() => {
             setLatestReply(content.slice(0, idx + 1).join(" "));
             idx++;
-            if (idx >= content.length) clearInterval(interval);
+            if (idx >= content.length) {
+                clearInterval(interval);
+            }
         }, 40);
 
         return () => clearInterval(interval);
-    }, [prevChats, reply]);
+    }, [prevChats, reply, lastProcessedReply]);
 
     return (
         <div className="chats">
@@ -86,7 +100,6 @@ function Chat() {
                     </div>
                 </div>
             )}
-            
             
             <div ref={chatEndRef} />
         </div>

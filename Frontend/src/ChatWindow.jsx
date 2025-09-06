@@ -6,7 +6,7 @@ import { useContext, useState, useEffect } from 'react';
 import { ScaleLoader } from "react-spinners";
 
 function ChatWindow() {
-    let { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, setNewChat, showAuth, setShowAuth, showAbout, setShowAbout, guestMode, setGuestMode } = useContext(MyContext);
+    let { prompt, setPrompt, reply, setReply, currThreadId, prevChats, setPrevChats, setNewChat, showAuth, setShowAuth, guestMode, setGuestMode } = useContext(MyContext);
     const { user, token, logout } = useAuth();
     let [loader, setLoader] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
@@ -129,10 +129,6 @@ function ChatWindow() {
         // Don't set guestMode to false here - let it be handled after successful auth
     };
 
-    const handleAbout = () => {
-        setShowAbout(true);
-    };
-
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -158,9 +154,8 @@ function ChatWindow() {
         <div className='chatWindow'>
             {/* Navbar */}
             <div className="navbar">
-                <span className="navbar-title" onClick={handleAbout}>
+                <span className="navbar-title">
                     PromptPilot 
-                    <i className="fa-solid fa-chevron-down fa-xs"></i>
                 </span>
                 
                 {user && !guestMode ? (

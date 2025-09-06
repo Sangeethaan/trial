@@ -2,7 +2,6 @@ import './App.css'
 import ChatWindow from './ChatWindow';
 import SideBar from './SideBar';
 import Auth from './Auth';
-import About from './About';
 import { MyContext } from './MyContext';
 import { AuthProvider, useAuth } from './AuthContext';
 import { useState, useEffect } from 'react';
@@ -17,7 +16,6 @@ function AppContent() {
   let [newChat , setNewChat] = useState(true);
   let [allThreads , setAllThreads] = useState([]);
   let [showAuth, setShowAuth] = useState(false);
-  let [showAbout, setShowAbout] = useState(false);
   let [guestMode, setGuestMode] = useState(true);
 
   // Sync guest mode with authentication state
@@ -38,7 +36,6 @@ function AppContent() {
     newChat , setNewChat,
     allThreads , setAllThreads,
     showAuth, setShowAuth,
-    showAbout, setShowAbout,
     guestMode, setGuestMode
   };
 
@@ -47,14 +44,6 @@ function AppContent() {
       <div className="loading-screen">
         <div className="loader">Loading...</div>
       </div>
-    );
-  }
-
-  if (showAbout) {
-    return (
-      <MyContext.Provider value={providerValues}>
-        <About />
-      </MyContext.Provider>
     );
   }
 
