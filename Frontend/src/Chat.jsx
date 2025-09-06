@@ -87,7 +87,7 @@ function Chat() {
                 </div>
             )}
             
-            {/* Auto-scroll anchor */}
+            
             <div ref={chatEndRef} />
         </div>
     );
