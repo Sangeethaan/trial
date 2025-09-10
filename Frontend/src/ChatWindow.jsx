@@ -12,6 +12,7 @@ function ChatWindow() {
     let [loader, setLoader] = useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [theme, setTheme] = useState(localStorage.getItem('theme') || 'dark');
+    const [processedReplies, setProcessedReplies] = useState(new Set()); // Track processed replies
 
     // Apply theme to document
     useEffect(() => {
@@ -27,8 +28,16 @@ function ChatWindow() {
             setReply(null);
             setNewChat(true);
             setGuestMode(false);
+            setProcessedReplies(new Set()); // Clear processed replies tracking
         }
     }, [user, guestMode, setPrevChats, setReply, setNewChat, setGuestMode]);
+
+    // Clear processed replies when starting new chat or switching modes
+    useEffect(() => {
+        if (prevChats.length === 0) {
+            setProcessedReplies(new Set());
+        }
+    }, [prevChats.length]);
 
     const getReply = async () => {
         if (!prompt.trim()) return;
@@ -100,15 +109,24 @@ function ChatWindow() {
         setLoader(false);
     };
 
-    // Append assistant reply to prevChats
+    // Append assistant reply to prevChats - FIXED to prevent duplicates
     useEffect(() => {
-        if (reply) {
-            setPrevChats(prevChats => [
-                ...prevChats, 
-                { role: "assistant", content: reply }
-            ]);
+        if (reply && !processedReplies.has(reply)) {
+            // Check if the last message in prevChats is already this reply
+            const lastMessage = prevChats[prevChats.length - 1];
+            
+            // Only add if the last message isn't already this reply
+            if (!lastMessage || lastMessage.role !== "assistant" || lastMessage.content !== reply) {
+                setPrevChats(prevChats => [
+                    ...prevChats, 
+                    { role: "assistant", content: reply }
+                ]);
+                
+                // Mark this reply as processed
+                setProcessedReplies(prev => new Set([...prev, reply]));
+            }
         }
-    }, [reply, setPrevChats]);
+    }, [reply, prevChats, processedReplies, setPrevChats]);
 
     const handleThemeToggle = () => {
         const newTheme = theme === 'dark' ? 'light' : 'dark';
@@ -123,6 +141,7 @@ function ChatWindow() {
         setPrevChats([]);
         setReply(null);
         setNewChat(true);
+        setProcessedReplies(new Set()); // Clear processed replies tracking
     };
 
     const handleSignIn = () => {

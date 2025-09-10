@@ -68,6 +68,8 @@ function Auth() {
     const handleBackToGuest = () => {
         setShowAuth(false);
         setGuestMode(true);
+        // DON'T clear chat data when going back to guest mode
+        // The existing guest conversation should remain intact
     };
 
     return (
